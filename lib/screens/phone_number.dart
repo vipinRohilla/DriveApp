@@ -250,15 +250,18 @@ MobileVerificationState currentState =
                 height: 18,
               ),
               Container(
-                width: 200,
-                height: 200,
-                decoration: BoxDecoration(
-                  color: Colors.deepPurple.shade50,
-                  shape: BoxShape.circle,
+                constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width,
+                maxHeight: MediaQuery.of(context).size.height,
                 ),
-                child: Image.asset(
-                  'assets/images/illustration-3.png',
-                ),
+                
+                child: 
+                // Image.asset(
+                //   'assets/images/illustration-3.png',
+                // ),
+                Icon(Icons.mobile_friendly_rounded,
+                size: MediaQuery.of(context).size.height/10,
+                )
               ),
               const SizedBox(
                 height: 24,
