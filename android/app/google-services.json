@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "71610879388",
+    "project_id": "loginlogoutflutter-6e416",
+    "storage_bucket": "loginlogoutflutter-6e416.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:71610879388:android:0f0bd9e4df21d7af894c59",
+        "android_client_info": {
+          "package_name": "com.example.loginlogoutflutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "71610879388-o57j7s5r2iv684u80n7ch0prrocibf8j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBj_1327rV2S-E5oAiMBvsDrV-hArs8-qE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "71610879388-o57j7s5r2iv684u80n7ch0prrocibf8j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
