@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:loginlogoutflutter/screens/home_screen.dart';
+import 'package:loginlogoutflutter/screens/uploaded_files.dart';
 import 'package:loginlogoutflutter/screens/welcome_screen.dart';
 
 void main() async {
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         debugShowCheckedModeBanner: false,
-        home: const InitializerWidget());
+        home: const UploadedFiles());
   }
 }
 
@@ -55,6 +55,6 @@ class _InitializerWidgetState extends State<InitializerWidget> {
       body: Center(
         child: CircularProgressIndicator(),
       ),
-    ) : _user == null ? const Welcome() : const HomeScreen();
+    ) : _user == null ? const Welcome() : const UploadedFiles();
   }
 }

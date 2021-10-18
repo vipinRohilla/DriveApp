@@ -1,7 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:loginlogoutflutter/screens/home_screen.dart';
+import 'package:loginlogoutflutter/screens/uploaded_files.dart';
 
 
 enum MobileVerificationState {
@@ -45,7 +44,7 @@ MobileVerificationState currentState =
       });
 
       if(authCredential.user != null){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>const HomeScreen()));
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>const UploadedFiles()));
       }
 
     } on FirebaseAuthException catch (e) {
@@ -85,17 +84,6 @@ MobileVerificationState currentState =
               const SizedBox(
                 height: 18,
               ),
-              // Container(
-              //   width: 200,
-              //   height: 200,
-              //   decoration: BoxDecoration(
-              //     color: Colors.deepPurple.shade50,
-              //     shape: BoxShape.circle,
-              //   ),
-              //   child: Image.asset(
-              //     'assets/images/illustration-2.png',
-              //   ),
-              // ),
               const SizedBox(
                 height: 24,
               ),
@@ -176,13 +164,11 @@ MobileVerificationState currentState =
                         setState(() {
                           showLoading = false;
                         });
-                        //signInWithPhoneAuthCredential(phoneAuthCredential);
                       },
                       verificationFailed: (verificationFailed) async {
                         setState(() {
                           showLoading = false;
                         });
-                        // _scaffoldKey.currentState
                         ScaffoldMessenger.of(context)
                         .showSnackBar(
                           
@@ -256,9 +242,6 @@ MobileVerificationState currentState =
                 ),
                 
                 child: 
-                // Image.asset(
-                //   'assets/images/illustration-3.png',
-                // ),
                 Icon(Icons.mobile_friendly_rounded,
                 size: MediaQuery.of(context).size.height/10,
                 )
@@ -345,16 +328,10 @@ MobileVerificationState currentState =
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        // key: _scaffoldKey,
         body: SingleChildScrollView(
           child: Container(
             constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
             child: 
-            // showLoading
-            //     ? const Center(
-            //         child: CircularProgressIndicator(),
-            //       )
-            //     : 
                 currentState == MobileVerificationState.showMobileFormState
                     ? getMobileFormWidget(context)
                     : getOtpFormWidget(context),
