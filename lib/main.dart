@@ -1,13 +1,22 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:loginlogoutflutter/api/firebase_api.dart';
+import 'package:loginlogoutflutter/notifier/firebase_notifier.dart';
+import 'package:loginlogoutflutter/screens/gallery_screen.dart';
+import 'package:loginlogoutflutter/screens/upload_screen.dart';
 import 'package:loginlogoutflutter/screens/uploaded_files.dart';
 import 'package:loginlogoutflutter/screens/welcome_screen.dart';
+import 'package:flutter/foundation.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MyApp());
+
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (context) => FirebaseApi()),
+  ], child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -15,14 +24,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
-        debugShowCheckedModeBanner: false,
-        home: const UploadedFiles());
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => FirebaseApi()),
+        ],
+        child: MaterialApp(
+            title: 'Flutter Demo',
+            theme: ThemeData(
+              primarySwatch: Colors.blue,
+              visualDensity: VisualDensity.adaptivePlatformDensity,
+            ),
+            debugShowCheckedModeBanner: false,
+            home: const InitializerWidget()));
   }
 }
 
@@ -34,12 +47,10 @@ class InitializerWidget extends StatefulWidget {
 }
 
 class _InitializerWidgetState extends State<InitializerWidget> {
-
   late FirebaseAuth _auth;
   late User? _user;
 
   bool isLoading = true;
-
 
   @override
   void initState() {
@@ -51,10 +62,14 @@ class _InitializerWidgetState extends State<InitializerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return isLoading ? const Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(),
-      ),
-    ) : _user == null ? const Welcome() : const UploadedFiles();
+    return isLoading
+        ? const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          )
+        : _user == null
+            ? const Welcome()
+            : const GalleryScreen();
   }
 }
