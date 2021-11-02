@@ -57,7 +57,7 @@ class UploadScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // selectFileToUpload();
-          firebaseProvider.selectFileToUpload();
+          firebaseProvider.selectFileToUpload(context);
         },
         child: const Icon(Icons.add),
       ),
@@ -66,7 +66,7 @@ class UploadScreen extends StatelessWidget {
           GestureDetector(
             onTap: () {
               // selectFileToUpload();
-              firebaseProvider.selectFileToUpload();
+              firebaseProvider.selectFileToUpload(context);
             },
             child: Padding(
                 padding: const EdgeInsets.symmetric(

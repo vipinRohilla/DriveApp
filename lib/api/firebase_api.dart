@@ -1,8 +1,10 @@
+// import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:loginlogoutflutter/screens/gallery_screen.dart';
 
 class FirebaseApi with ChangeNotifier {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
@@ -47,7 +49,7 @@ class FirebaseApi with ChangeNotifier {
     });
   }
 
-  Future selectFileToUpload() async {
+  Future selectFileToUpload(context) async {
     try {
       FilePickerResult? result = await FilePicker.platform
           .pickFiles(allowMultiple: true, type: FileType.image);
@@ -60,15 +62,17 @@ class FirebaseApi with ChangeNotifier {
           final file = File(selectedFile.path!);
           _selectedFiles.add(file);
         }
-
+        UploadTask? task;
         for (var file in _selectedFiles) {
-          final UploadTask task = uploadFileToStorage(file);
-          saveImageUrlToFirebase(task);
+          task = uploadFileToStorage(file);
+          saveImageUrlToFirebase(task!);
           _filePath = File(path);
           _uploadedTasks.add(task);
 
           notifyListeners();
         }
+        // Navigator.push(context,
+        //     MaterialPageRoute(builder: (context) => GalleryScreen()));
       } else {
         // print("user cancelled the selection");
       }

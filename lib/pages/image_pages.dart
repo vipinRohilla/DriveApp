@@ -12,7 +12,7 @@
 
 //   @override
 //   Widget build(BuildContext context) {
-//     final isImage = ['.jpeg', '.jpg', '.png'].any(file.name.contains);
+//     // final isImage = ['.jpeg', '.jpg', '.png'].any(file.name.contains);
 
 //     return Scaffold(
 //       appBar: AppBar(
