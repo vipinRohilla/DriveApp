@@ -2,10 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:loginlogoutflutter/api/firebase_api.dart';
-import 'package:loginlogoutflutter/notifier/firebase_notifier.dart';
 import 'package:loginlogoutflutter/screens/gallery_screen.dart';
-import 'package:loginlogoutflutter/screens/upload_screen.dart';
-import 'package:loginlogoutflutter/screens/uploaded_files.dart';
 import 'package:loginlogoutflutter/screens/welcome_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
@@ -24,18 +21,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (context) => FirebaseApi()),
-        ],
-        child: MaterialApp(
-            title: 'Flutter Demo',
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-              visualDensity: VisualDensity.adaptivePlatformDensity,
-            ),
-            debugShowCheckedModeBanner: false,
-            home: const InitializerWidget()));
+    return MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        debugShowCheckedModeBanner: false,
+        home: const InitializerWidget());
   }
 }
 
@@ -70,6 +63,6 @@ class _InitializerWidgetState extends State<InitializerWidget> {
           )
         : _user == null
             ? const Welcome()
-            : const GalleryScreen();
+            : GalleryScreen();
   }
 }

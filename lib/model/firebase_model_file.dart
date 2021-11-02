@@ -1,32 +1,17 @@
-import 'package:firebase_storage/firebase_storage.dart';
-
 class FirebaseFile {
-  // String id;
-  Reference ref;
-  String name;
-  String url;
+  String? _url;
+  String? _fileName;
 
-  FirebaseFile({
-    // required this.id,
-    required this.ref,
-    required this.name,
-    required this.url,
-  });
+  String? get getUrl => _url;
+  String? get getFileName => _fileName;
 
-  // FirebaseFile.fromMap(
-  //     Map<String, dynamic> data, this.ref, this.name, this.url, this.id) {
-  //   id = data["id"];
-  //   ref = data["ref"];
-  //   name = data["name"];
-  //   url = data["url"];
-  // }
+  setUrl(String myUrl) {
+    _url = myUrl;
+  }
 
-  // Map<String, dynamic> toMap() {
-  //   return {
-  //     'id' : id,
-  //     'ref' : ref,
-  //     'name' : name,
-  //     'url' : url
-  //   };
-  // }
+  setFileName(String myFileName) {
+    _fileName = myFileName;
+  }
+
+  FirebaseFile(this._url, this._fileName);
 }

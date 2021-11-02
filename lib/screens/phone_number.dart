@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:loginlogoutflutter/screens/gallery_screen.dart';
-import 'package:loginlogoutflutter/screens/upload_screen.dart';
+// import 'package:loginlogoutflutter/screens/upload_screen.dart';
 
 enum MobileVerificationState {
   showMobileFormState,
@@ -43,8 +43,8 @@ class _PhoneNumberState extends State<PhoneNumber> {
       });
 
       if (authCredential.user != null) {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const GalleryScreen()));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => GalleryScreen()));
       }
     } on FirebaseAuthException catch (e) {
       setState(() {

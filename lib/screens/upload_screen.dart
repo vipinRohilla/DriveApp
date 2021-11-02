@@ -1,103 +1,32 @@
 import 'dart:io';
-
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:loginlogoutflutter/api/firebase_api.dart';
 import 'package:loginlogoutflutter/screens/gallery_screen.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:loginlogoutflutter/screens/welcome_screen.dart';
 import 'package:path/path.dart';
+import 'package:provider/provider.dart';
 
-class UploadScreen extends StatefulWidget {
+class UploadScreen extends StatelessWidget {
   const UploadScreen({Key? key}) : super(key: key);
 
-  @override
-  _UploadScreenState createState() => _UploadScreenState();
-}
+//   @override
+//   _UploadScreenState createState() => _UploadScreenState();
+// }
 
-class _UploadScreenState extends State<UploadScreen> {
-  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-  final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
-
-  List<UploadTask> uploadedTasks = [];
-  List<File> selectedFiles = [];
-  UploadTask? _task;
-  File? _filePath;
-  final ImagePicker _image = ImagePicker();
-
-  uploadFileToStorage(File file) {
-    UploadTask task = _firebaseStorage
-        .ref()
-        .child("image/${DateTime.now().toString()}")
-        .putFile(file);
-
-    return task;
-  }
-
-  writeImageUrlToFireStore(imageUrl, fileName) {
-    _firebaseFirestore
-        .collection("images")
-        .add({"url": imageUrl, "filename": fileName}).whenComplete(
-            () => print("${imageUrl} is saved"));
-  }
-
-  saveImageUrlToFirebase(UploadTask task) {
-    task.snapshotEvents.listen((snapshot) {
-      if (snapshot.state == TaskState.success) {
-        snapshot.ref.getDownloadURL().then((imageUrl) {
-          print("4021" + snapshot.ref.name);
-          String fileName = snapshot.ref.name;
-          writeImageUrlToFireStore(imageUrl, fileName);
-        });
-        snapshot.ref.name;
-        print(" 4020 my task is completed");
-      }
-    });
-  }
-
-  Future selectFileToUpload() async {
-    try {
-      FilePickerResult? result = await FilePicker.platform
-          .pickFiles(allowMultiple: true, type: FileType.image);
-
-      if (result != null) {
-        final path = result.files.single.path!;
-
-        selectedFiles.clear();
-        for (var selectedFile in result.files) {
-          final file = File(selectedFile.path!);
-          selectedFiles.add(file);
-        }
-
-        for (var file in selectedFiles) {
-          final UploadTask task = uploadFileToStorage(file);
-          saveImageUrlToFirebase(task);
-
-          setState(() {
-            _filePath = File(path);
-            uploadedTasks.add(task);
-          });
-        }
-      } else {
-        print("user cancelled the selection");
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
-
+// class _UploadScreenState extends State<UploadScreen> {
   @override
   Widget build(BuildContext context) {
-    final fileName =
-        _filePath != null ? basename(_filePath!.path) : 'No File Selected';
+    final firebaseProvider = Provider.of<FirebaseApi>(context);
+    final fileName = firebaseProvider.getFilePath != null
+        ? basename(firebaseProvider.getFilePath!.path)
+        : 'No File Selected';
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurpleAccent.shade700,
         title: const Text("Upload Files"),
-        //  leading: const Text(""),
         actions: [
           GestureDetector(
             onTap: () async {
@@ -119,28 +48,16 @@ class _UploadScreenState extends State<UploadScreen> {
           ),
           IconButton(
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const GalleryScreen()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => GalleryScreen()));
               },
               icon: const Icon(Icons.photo))
         ],
-
-        // actions: [
-        //   IconButton(
-        //       onPressed: () {
-        //         Navigator.push(
-        //             context,
-        //             MaterialPageRoute(
-        //                 builder: (context) => const GalleryScreen()));
-        //       },
-        //       icon: const Icon(Icons.photo))
-        // ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          selectFileToUpload();
+          // selectFileToUpload();
+          firebaseProvider.selectFileToUpload();
         },
         child: const Icon(Icons.add),
       ),
@@ -148,7 +65,8 @@ class _UploadScreenState extends State<UploadScreen> {
         children: [
           GestureDetector(
             onTap: () {
-              selectFileToUpload();
+              // selectFileToUpload();
+              firebaseProvider.selectFileToUpload();
             },
             child: Padding(
                 padding: const EdgeInsets.symmetric(
@@ -186,64 +104,50 @@ class _UploadScreenState extends State<UploadScreen> {
                   ),
                 )),
           ),
-          // Container(
-          //     constraints: BoxConstraints(
-          //         maxWidth: MediaQuery.of(context).size.width / 2),
-          //     child: ElevatedButton(
-          //       onPressed: () {
-          //         uploadFile(context);
-          //       },
-          //       child: const Text("Upload", textAlign: TextAlign.center),
-          //     )),
           Expanded(
             child: SizedBox(
               height: 600,
-              child: uploadedTasks.isEmpty
+              child: firebaseProvider.getUploadedTasks.isEmpty
                   ? const Center(child: Text(""))
                   : ListView.separated(
-                      itemCount: 1,
+                      itemCount: firebaseProvider.getUploadedTasks.length,
                       itemBuilder: (context, index) {
                         return StreamBuilder<TaskSnapshot>(
                           builder: (context, snapShot) {
-                            return
-                                // snapShot.connectionState == ConnectionState.waiting
-                                //     ? const Center(child: CircularProgressIndicator())
-                                //     :
-                                snapShot.hasError
-                                    ? const Text("Error Occured")
-                                    : snapShot.hasData
-                                        ? ListTile(
-                                            dense: true,
-                                            // isThreeLine: true,
-                                            // children: [
-                                            leading: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(5),
-                                              child: Image(
-                                                image: _filePath == null
+                            return snapShot.hasError
+                                ? const Text("Error Occured")
+                                : snapShot.hasData
+                                    ? ListTile(
+                                        dense: true,
+                                        leading: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                          child: Image(
+                                            image:
+                                                firebaseProvider.getFilePath ==
+                                                        null
                                                     ? const AssetImage(" ")
                                                     : FileImage(File(
-                                                            _filePath!.path))
+                                                            firebaseProvider
+                                                                .getFilePath!
+                                                                .path))
                                                         as ImageProvider,
-                                                width: 70,
-                                              ),
-                                            ),
-                                            // const SizedBox(
-                                            //   width: 10,
-                                            // ),
-                                            title: Text(fileName,
-                                                style: const TextStyle(
-                                                    fontSize: 13,
-                                                    color: Colors.black)),
-
-                                            subtitle: Text(
-                                                "${snapShot.data?.bytesTransferred} /${snapShot.data?.totalBytes} ${snapShot.data?.state == TaskState.success ? "Completed" : snapShot.data?.state == TaskState.running ? "In Progress" : ""}"),
-
-                                            // ]
-                                          )
-                                        : Container();
+                                            width: 70,
+                                          ),
+                                        ),
+                                        title: Text(fileName,
+                                            style: const TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.black)),
+                                        subtitle: snapShot.data?.state ==
+                                                TaskState.success
+                                            ? const Text("Completed")
+                                            : const LinearProgressIndicator(),
+                                      )
+                                    : Container();
                           },
-                          stream: uploadedTasks[index].snapshotEvents,
+                          stream: firebaseProvider
+                              .getUploadedTasks[index].snapshotEvents,
                         );
                       },
                       separatorBuilder: (context, index) => const Divider(),
@@ -254,23 +158,4 @@ class _UploadScreenState extends State<UploadScreen> {
       ),
     );
   }
-
-  Widget buildUploadStatus(UploadTask task) => StreamBuilder<TaskSnapshot>(
-        stream: task.snapshotEvents,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final snap = snapshot.data!;
-            final progress = snap.bytesTransferred / snap.totalBytes;
-            // final percentage = (progress * 100).toStringAsFixed(1);
-            final _percentage = (progress * 100).toStringAsFixed(1);
-
-            return Text(
-              '$_percentage %',
-              style: const TextStyle(fontSize: 12),
-            );
-          } else {
-            return const Text("0.0 %");
-          }
-        },
-      );
 }

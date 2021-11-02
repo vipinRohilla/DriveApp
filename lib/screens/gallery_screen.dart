@@ -1,21 +1,26 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:loginlogoutflutter/api/firebase_api.dart';
 import 'package:loginlogoutflutter/screens/upload_screen.dart';
 import 'package:loginlogoutflutter/screens/welcome_screen.dart';
+import 'package:provider/provider.dart';
 
-class GalleryScreen extends StatefulWidget {
-  const GalleryScreen({Key? key}) : super(key: key);
+class GalleryScreen extends StatelessWidget {
+//   const GalleryScreen({Key? key}) : super(key: key);
 
-  @override
-  _GalleryScreenState createState() => _GalleryScreenState();
-}
+//   @override
+//   _GalleryScreenState createState() => _GalleryScreenState();
+// }
 
-class _GalleryScreenState extends State<GalleryScreen> {
+// class _GalleryScreenState extends State<GalleryScreen> {
+
+  GalleryScreen({Key? key}) : super(key: key);
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
+    final firebaseProvider = Provider.of<FirebaseApi>(context);
+
     return Scaffold(
       floatingActionButton: ElevatedButton(
           onPressed: () {
@@ -26,7 +31,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
           child: const Text("+  upload files")),
       appBar: AppBar(
         backgroundColor: Colors.deepPurpleAccent.shade700,
-        leading: Text(""),
+        leading: const Text(""),
         elevation: 2,
         actions: [
           GestureDetector(
@@ -78,7 +83,8 @@ class _GalleryScreenState extends State<GalleryScreen> {
                             ),
                             trailing: GestureDetector(
                                 onTap: () {
-                                  deleteImage(e.get("url"), context);
+                                  firebaseProvider.deleteImage(
+                                      e.get("url"), context, snapshot);
                                 },
                                 child: const Icon(Icons.delete)),
                           );
@@ -91,14 +97,5 @@ class _GalleryScreenState extends State<GalleryScreen> {
         ),
       ),
     );
-  }
-
-  deleteImage(String imgUrl, BuildContext context) async {
-    String url = imgUrl;
-    Reference reference = FirebaseStorage.instance.refFromURL(url);
-    reference.delete();
-    setState(() {
-      // print("delete");
-    });
   }
 }

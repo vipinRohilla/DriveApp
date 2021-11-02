@@ -1,65 +1,91 @@
 import 'dart:io';
-import 'dart:typed_data';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:loginlogoutflutter/model/firebase_model_file.dart';
-import 'package:path_provider/path_provider.dart';
 
 class FirebaseApi with ChangeNotifier {
-  // Future<
-  static UploadTask?
-      // >
-      uploadFile(String destination, File file) {
-    try {
-      final ref = FirebaseStorage.instance.ref(destination);
-      final imgUrl = ref.getDownloadURL();
-      // print("4020" + imgUrl.toString());
+  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+  final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
 
-      final temp = ref.putFile(file);
-      print("4021" + temp.toString());
-      // temp.state
-      return temp;
-    } on FirebaseException catch (e) {
-      return null;
+  final List<UploadTask> _uploadedTasks = [];
+  final List<File> _selectedFiles = [];
+  File? _filePath;
+
+  List<UploadTask> get getUploadedTasks => _uploadedTasks;
+  List<File> get getSelectedFiles => _selectedFiles;
+  File? get getFilePath => _filePath;
+
+  uploadFileToStorage(File file) {
+    UploadTask task = _firebaseStorage
+        .ref()
+        .child("image/${DateTime.now().toString()}")
+        .putFile(file);
+
+    return task;
+  }
+
+  writeImageUrlToFireStore(imageUrl, fileName) {
+    _firebaseFirestore
+        .collection("images")
+        .add({"url": imageUrl, "filename": fileName}).whenComplete(
+            () => {SnackBar(content: Text("$imageUrl is saved"))});
+    // print("$imageUrl is saved");
+  }
+
+  saveImageUrlToFirebase(UploadTask task) {
+    task.snapshotEvents.listen((snapshot) {
+      if (snapshot.state == TaskState.success) {
+        snapshot.ref.getDownloadURL().then((imageUrl) {
+          // print("4021" + snapshot.ref.name);
+          String fileName = snapshot.ref.name;
+          writeImageUrlToFireStore(imageUrl, fileName);
+        });
+        snapshot.ref.name;
+        // print(" 4020 my task is completed");
+      }
+    });
+  }
+
+  Future selectFileToUpload() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform
+          .pickFiles(allowMultiple: true, type: FileType.image);
+
+      if (result != null) {
+        final path = result.files.single.path!;
+
+        _selectedFiles.clear();
+        for (var selectedFile in result.files) {
+          final file = File(selectedFile.path!);
+          _selectedFiles.add(file);
+        }
+
+        for (var file in _selectedFiles) {
+          final UploadTask task = uploadFileToStorage(file);
+          saveImageUrlToFirebase(task);
+          _filePath = File(path);
+          _uploadedTasks.add(task);
+
+          notifyListeners();
+        }
+      } else {
+        // print("user cancelled the selection");
+      }
+    } catch (e) {
+      // print(e);
     }
   }
 
-  static UploadTask? uploadBytes(String destination, Uint8List data) {
-    try {
-      final ref = FirebaseStorage.instance.ref(destination);
+  Future deleteImage(String imgUrl, BuildContext context, snapshot) async {
+    Reference reference = FirebaseStorage.instance.refFromURL(imgUrl);
+    reference.delete();
+    _firebaseFirestore
+        .collection("images")
+        .doc(snapshot.data?.docs[0].id)
+        .delete();
+    // .then((value) => print("delete"));
 
-      return ref.putData(data);
-    } on FirebaseException catch (e) {
-      return null;
-    }
-  }
-
-  static Future<List<String>> _getDownloadLinks(List<Reference> refs) =>
-      Future.wait(refs.map((ref) => ref.getDownloadURL()).toList());
-
-  static Future<List<FirebaseFile>> listAll(String path) async {
-    final _ref = FirebaseStorage.instance.ref(path);
-    final _result = await _ref.listAll();
-
-    final urls = await _getDownloadLinks(_result.items);
-
-    return urls
-        .asMap()
-        .map((index, url) {
-          final _ref = _result.items[index];
-          final _name = _ref.name;
-          final _file = FirebaseFile(ref: _ref, name: _name, url: url);
-
-          return MapEntry(index, _file);
-        })
-        .values
-        .toList();
-  }
-
-  static Future downloadFile(Reference ref) async {
-    final dir = await getApplicationDocumentsDirectory();
-    final file = File('${dir.path}/${ref.name}');
-
-    await ref.writeToFile(file);
+    notifyListeners();
   }
 }
