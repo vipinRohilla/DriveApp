@@ -44,7 +44,7 @@ class _PhoneNumberState extends State<PhoneNumber> {
 
       if (authCredential.user != null) {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => GalleryScreen()));
+            context, MaterialPageRoute(builder: (context) => const GalleryScreen()));
       }
     } on FirebaseAuthException catch (e) {
       setState(() {

@@ -49,7 +49,7 @@ class UploadScreen extends StatelessWidget {
           IconButton(
               onPressed: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => GalleryScreen()));
+                    MaterialPageRoute(builder: (context) => const GalleryScreen()));
               },
               icon: const Icon(Icons.photo))
         ],

@@ -1,17 +1,17 @@
-class FirebaseFile {
-  String? _url;
-  String? _fileName;
+ class FirebaseFolderName {
+  // String? _url;
+  static String? fileName;
 
-  String? get getUrl => _url;
-  String? get getFileName => _fileName;
+  // String? get getUrl => _url;
+  static String? get getFileName => fileName;
 
-  setUrl(String myUrl) {
-    _url = myUrl;
+  // setUrl(String myUrl) {
+  //   _url = myUrl;
+  // }
+
+  static setFileName(String myFileName) {
+    fileName = myFileName;
   }
 
-  setFileName(String myFileName) {
-    _fileName = myFileName;
-  }
-
-  FirebaseFile(this._url, this._fileName);
+  // FirebaseFolderName(this._fileName);
 }

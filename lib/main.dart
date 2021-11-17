@@ -2,7 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:loginlogoutflutter/api/firebase_api.dart';
-import 'package:loginlogoutflutter/screens/gallery_screen.dart';
+import 'package:loginlogoutflutter/screens/folder_screen.dart';
+// import 'package:loginlogoutflutter/screens/gallery_screen.dart';
 import 'package:loginlogoutflutter/screens/welcome_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
@@ -63,6 +64,6 @@ class _InitializerWidgetState extends State<InitializerWidget> {
           )
         : _user == null
             ? const Welcome()
-            : GalleryScreen();
+            : const HomePage();
   }
 }
